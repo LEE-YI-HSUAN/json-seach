@@ -1,0 +1,28 @@
+{
+  "accounts":[
+    {
+      "password": "eyJtZW1iZXJMaXN0I",
+      "userId": "TestUser01"
+    },
+    {
+      "password": "Q4US8wIiwibGFpeXV",
+      "userId": "TestUser02"
+    },
+    {
+      "password": "ajVnRXVxWlZyQUNWS",
+      "userId": "TestUser03"
+    },
+    {
+      "password": "oi6Zi/6IO257OV5Lu",
+      "userId": "TestUser04"
+    },
+    {
+      "password": "In0seyJhZGRyZXNzI",
+      "userId": "TestUser05"
+    },
+    {
+      "password": "wiaWNvblVybCI6IiI",
+      "userId": "TestUser06"
+    }
+  ]
+}
