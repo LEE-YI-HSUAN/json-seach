@@ -1,4 +1,4 @@
-﻿// 1072019.cpp : 此檔案包含 'main' 函式。程式會於該處開始執行及結束執行。
+// 1072019.cpp : 此檔案包含 'main' 函式。程式會於該處開始執行及結束執行。
 //
 
 #include <iostream>
@@ -15,6 +15,7 @@ class items {
 	list<string> keys;
 	string value;
 public:
+	//將key 放入list中
 	void push_keys(list<string> keys) {
 		this->keys = keys;
 	}
@@ -35,7 +36,7 @@ public:
 	}
 
 	void judgment(string key) {
-		string infor="";
+		string infor = "";
 		list<string>::iterator it1 = this->keys.begin();
 
 		for (; it1 != this->keys.end(); it1++)
@@ -54,7 +55,7 @@ public:
 				return;
 			}
 			else if (key_len == -1) return;
-			
+
 			for (; key_len >= 0; key_len--, infor_len--) {
 				if (key[key_len] != infor[infor_len])
 					return;
@@ -77,42 +78,63 @@ int main(int argc, char* argv[])
 	vector<items> all_items;
 
 	ifstream fin1;
-	//fin1.open("json.txt");
-	fin1.open(argv[1]);
+	fin1.open("json.txt");
+	//fin1.open(argv[1]);
 	char ch, lastch;
 	list<string> keys;
-	list<char> array, symbol;
-	bool is_string_value = false, is_key = false, push = false, pop = false, pushed = false;/*看該必資料是否放入過*/
+	list<char> array, symbol;    //儲存{}及[]
+	bool is_string_value = false, is_key = false, push = false, pop = false, pushed = false;/*看該筆資料是否放入過*/
 	string key = "", value = "", p = "";
-	int state = 0, parantheses[2] = { 0,0 }, b[2] = { 0,0 };
+	int state = 0;
+	int parantheses[2] = { 0,0 };    //用來儲存{、}個數
+	int b[2] = { 0,0 }; //用來儲存[、]個數
 
-	while (fin1.get(ch)) {
+	while (fin1.get(ch)) {   //一個一個字元跑
+		cout<< "ch："<< ch << endl;
 		if (is_string_value == false && is_key == false) {
-			if (ch == '{')  parantheses[0]++;
-			else if (ch == '}') parantheses[1]++;
-			else if (ch == '[')  b[0]++;
-			else if (ch == ']') b[1]++;
+			switch (ch)
+			{
+			case '{':
+				parantheses[0]++;
+				break;
+			case '}':
+				parantheses[1]++;
+				break;
+			case '[':
+				b[0]++;
+				break;
+			case ']':
+				b[1]++;
+				break;
+			default:
+				break;
+			}
+			// if (ch == '{')  parantheses[0]++;
+			// else if (ch == '}') parantheses[1]++;
+			// else if (ch == '[')  b[0]++;
+			// else if (ch == ']') b[1]++;
 
 			//紀錄目前array object狀態
 			if (ch == '[' || ch == '{') {
 				symbol.push_back(ch); pushed = false;
 			}
-			else if (ch == ']' || ch == '}')
+			else if (ch == ']' || ch == '}'){
 				symbol.pop_back();
+			}
 			//最後一筆資料未放入過
 			if (parantheses[0] == parantheses[1] && pushed == false && b[0] == b[1] && parantheses[0] != 0 && b[0] != 0)
 				push = true;
 			else if (parantheses[0] == parantheses[1] && b[0] == b[1] && parantheses[0] != 0 && b[0] != 0)
 				break;
 
-			if (ch == '{') state = 1;
-			else if (state == 1 && ch == '\"') is_key = true;
-			else if (state == 2 && ch == '\"') is_string_value = true;
-			else if (ch == ':') state = 2;
-			else if (ch == '[') {
+			if (ch == '{') state = 1;  //接下來是key 
+			else if (state == 1 && ch == '\"') is_key = true;    //是key值
+			else if (state == 2 && ch == '\"') is_string_value = true;   //是string的value
+			else if (ch == ':') state = 2;    //接下來是value
+			else if (ch == '[') {      
 				//目前array狀況
 				array.push_back(ch);
-				//[開頭的情況
+				//是[開頭的情況
 				if (state == 0 && ch == '[') state = 2;
 
 			}
@@ -134,7 +156,6 @@ int main(int argc, char* argv[])
 				//pop一個key
 				pop = true;
 			}
-			
 
 			if (state == 1) {
 				//不是key 就是false、true、null、數字的值
@@ -146,9 +167,9 @@ int main(int argc, char* argv[])
 			}
 			else if (state == 2) {
 				if (key != "") {
-					if (keys.size() + 1 > parantheses[0] - parantheses[1] && keys.size() != 0) 
+					if (keys.size() + 1 > parantheses[0] - parantheses[1] && keys.size() != 0)
 						keys.pop_back();
-					
+
 					keys.push_back(key);
 					key = "";
 				}
@@ -176,7 +197,7 @@ int main(int argc, char* argv[])
 			}
 			if (pop == true) {
 				if (keys.size() != 0) {
-					while (keys.size() > parantheses[0] - parantheses[1]) 
+					while (keys.size() > parantheses[0] - parantheses[1])
 						keys.pop_back();
 				}
 				list<char>::iterator i;
@@ -187,11 +208,11 @@ int main(int argc, char* argv[])
 				else state = 2;
 				pop = false;
 			}
-			if(ch!=' ' && ch!='\n' && ch != '\r\n') lastch = ch;
+			if (ch != ' ' && ch != '\n' /*&& ch != '\r\n'*/) lastch = ch;
 		}
 		//字串型態的value
 		else if (is_string_value == true) {
-		pushed = false;
+			pushed = false;
 			if (ch == '\\' || ch == '\"') {
 				if (p == "") {
 					if (ch != '\"') p += ch;
@@ -211,7 +232,7 @@ int main(int argc, char* argv[])
 		}
 		//key
 		else if (is_key == true) {
-		pushed = false;
+			pushed = false;
 			if (ch == '\\' || ch == '\"') {
 				if (p == "") {
 					if (ch != '\"') p += ch;
@@ -236,11 +257,9 @@ int main(int argc, char* argv[])
 	fin1.close();
 
 	/*cout << "all_items:" << endl;
-
 	for (int i = 0; i < all_items.size(); i++) {
 		all_items[i].print();
 	}
-
 	cout << endl << "output:" << endl;*/
 	ifstream fin2;
 	//fin2.open("test.txt");
@@ -248,7 +267,7 @@ int main(int argc, char* argv[])
 	bool first = true;
 	key = "";
 
-	while (getline(fin2,key)) {
+	while (getline(fin2, key)) {
 		if (first == true) first = false;
 		else cout << endl;
 
@@ -265,4 +284,3 @@ int main(int argc, char* argv[])
 	}
 	fin2.close();
 }
-
